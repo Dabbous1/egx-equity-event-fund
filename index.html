@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EGX Rights-Issue Performance Tracker</title>
+<style>
+  :root{
+    --bg:#0c1118; --panel:#141c27; --panel2:#1b2533; --line:#243042;
+    --ink:#e8eef6; --muted:#8da0b8; --faint:#5c6f88;
+    --gold:#c9a24b; --gold2:#e3c178; --navy:#1f3864;
+    --up:#3ecf8e; --down:#ef6a6a; --accent:#4a9be0;
+    --live:#2f9e6f; --meta:#6b5bbd;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",system-ui,Arial,sans-serif;background:
+       radial-gradient(1200px 600px at 80% -10%, #16202e 0%, var(--bg) 55%) fixed;
+       color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none}
+  .wrap{max-width:1240px;margin:0 auto;padding:28px 22px 80px}
+  header.top{display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap;justify-content:space-between}
+  .brand h1{margin:0;font-size:25px;letter-spacing:.2px}
+  .brand h1 .mark{color:var(--gold2)}
+  .brand p{margin:6px 0 0;color:var(--muted);font-size:14px;max-width:640px}
+  .gen{font-size:12px;color:var(--faint);text-align:right;white-space:nowrap}
+
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0 6px}
+  .kpi{background:linear-gradient(180deg,var(--panel),#10171f);border:1px solid var(--line);
+       border-radius:12px;padding:14px 16px}
+  .kpi .v{font-size:24px;font-weight:700;color:var(--gold2)}
+  .kpi .l{font-size:12px;color:var(--muted);margin-top:2px}
+
+  .note{margin:20px 0 8px;background:#15202c;border:1px solid var(--line);border-left:3px solid var(--gold);
+        border-radius:10px;padding:13px 16px;font-size:13.3px;color:#c4d2e3}
+  .note b{color:var(--gold2)}
+  .note .tag{display:inline-block;font-size:11px;color:var(--faint);margin-right:6px}
+
+  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:22px 0 16px}
+  .search{flex:1;min-width:220px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;
+          padding:10px 13px;color:var(--ink);font-size:14px}
+  .search::placeholder{color:var(--faint)}
+  .chip{background:var(--panel2);border:1px solid var(--line);color:var(--muted);padding:8px 14px;border-radius:20px;
+        font-size:13px;cursor:pointer;user-select:none;transition:.15s}
+  .chip:hover{border-color:var(--gold)}
+  .chip.on{background:var(--gold);color:#1a130a;border-color:var(--gold);font-weight:600}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(355px,1fr));gap:16px;margin-top:8px}
+  .card{background:linear-gradient(180deg,var(--panel),#0f161e);border:1px solid var(--line);border-radius:14px;
+        padding:16px 16px 14px;cursor:pointer;transition:.16s;position:relative;overflow:hidden}
+  .card:hover{border-color:#37506f;transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.35)}
+  .card .row1{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+  .nm{font-size:15px;font-weight:650;line-height:1.3}
+  .ar{font-size:12px;color:var(--faint);margin-top:2px;direction:rtl}
+  .badge{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap;letter-spacing:.3px}
+  .b-live{background:rgba(47,158,111,.16);color:#5fd6a0;border:1px solid rgba(47,158,111,.4)}
+  .b-meta{background:rgba(107,91,189,.16);color:#a99bee;border:1px solid rgba(107,91,189,.4)}
+  .meta-line{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--muted)}
+  .pill{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+  .pill .k{color:var(--faint)}
+  .tick{font-family:"Consolas",monospace;color:var(--gold2);font-size:12px}
+
+  /* range bar */
+  .rangewrap{margin:15px 0 6px}
+  .rangelabels{display:flex;justify-content:space-between;font-size:11px;color:var(--faint);margin-bottom:5px}
+  .track{position:relative;height:9px;border-radius:6px;
+         background:linear-gradient(90deg,#26506f,#3a7fb0,#5fd6a0)}
+  .close-dot{position:absolute;top:-4px;width:3px;height:17px;background:var(--gold2);border-radius:2px;
+             box-shadow:0 0 0 2px rgba(201,162,75,.25)}
+  .closeval{position:absolute;top:18px;transform:translateX(-50%);font-size:11px;color:var(--gold2);white-space:nowrap}
+
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:24px}
+  .stat{background:#0e151d;border:1px solid var(--line);border-radius:8px;padding:8px 9px}
+  .stat .sv{font-size:14px;font-weight:650}
+  .stat .sl{font-size:10.5px;color:var(--faint);margin-top:1px}
+
+  .capbar{display:flex;align-items:center;gap:8px;margin-top:13px;font-size:12px}
+  .capbar .seg{height:7px;border-radius:4px}
+  .grow{color:var(--up);font-weight:650}
+
+  footer{margin-top:40px;color:var(--faint);font-size:12px;border-top:1px solid var(--line);padding-top:18px}
+  footer code{color:var(--muted);background:#0e151d;padding:1px 6px;border-radius:4px}
+
+  /* modal */
+  .overlay{position:fixed;inset:0;background:rgba(4,8,12,.72);backdrop-filter:blur(3px);display:none;
+           align-items:flex-start;justify-content:center;padding:40px 18px;z-index:50;overflow:auto}
+  .overlay.show{display:flex}
+  .modal{background:linear-gradient(180deg,var(--panel),#0e151d);border:1px solid var(--line);border-radius:16px;
+         max-width:680px;width:100%;padding:24px}
+  .modal h2{margin:0 0 2px;font-size:20px}
+  .modal .x{float:right;cursor:pointer;color:var(--muted);font-size:22px;line-height:1}
+  .kv{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;margin-top:16px}
+  .kv .item{border-bottom:1px solid var(--line);padding-bottom:7px}
+  .kv .item .k{font-size:11px;color:var(--faint)}
+  .kv .item .v{font-size:14px;margin-top:1px}
+  .modal .src{margin-top:18px;font-size:12px;color:var(--faint)}
+  .empty{grid-column:1/-1;text-align:center;color:var(--faint);padding:50px}
+  @media(max-width:680px){.kpis{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>EGX <span class="mark">Rights-Issue</span> Performance Tracker</h1>
+      <p>Every Egyptian Exchange subscription-right that traded as a <b>separate instrument</b> since
+         April 2021, shown one by one with how it performed over the window it was tradable.</p>
+    </div>
+    <div class="gen" id="gen"></div>
+  </header>
+
+  <div class="kpis" id="kpis"></div>
+
+  <div class="note">
+    <span class="tag">DATA NOTE</span>
+    <b id="liveN"></b> instruments carry <b>live EGX trading stats</b> — the full-life price range, traded
+    volume/value and number of trades pulled from EGX's <i>Historical Statistics → Stocks Data</i> tool
+    (egx.com.eg) for the rights instruments it currently exposes. EGX publishes these as a performance
+    <i>envelope</i> + a chart image, <b>not</b> a downloadable per-day OHLCV series, so each right shows its
+    real trading range and liquidity rather than a fabricated daily line. The remaining instruments
+    (2021–2025) are carried from the scraper's verified master list with their windows and capital-increase
+    economics; their day-by-day series is not exposed by any public source (it predates EGX's 3-year tool window).
+  </div>
+
+  <div class="controls">
+    <input class="search" id="search" placeholder="Search company, ticker or ISIN…">
+    <span class="chip on" data-f="all">All</span>
+    <span class="chip" data-f="egx_live">Live EGX stats</span>
+    <span class="chip" data-f="metadata_only">Master-list metadata</span>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    Sources — master list: EGX listing-committee notices &amp; dated disclosures (scraper seed).
+    Live stats: <code>egx.com.eg → Market Data → Historical Statistics → Stocks Data</code>, captured via a
+    real browser session (the server-side scrapers are geo-blocked). Built from
+    <code>egx_rights.sqlite</code>. Figures are EGX official; rounding as published.
+  </footer>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+
+<script src="data/data.js"></script>
+<script>
+const D = window.RIGHTS_DATA;
+const $ = s => document.querySelector(s);
+const fmt = (n,d=0)=> n==null?'—':Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const money = n => n==null?'—':(n>=1e9?(n/1e9).toFixed(2)+'B':n>=1e6?(n/1e6).toFixed(1)+'M':fmt(n));
+const px = n => n==null?'—':Number(n).toLocaleString('en-US',{minimumFractionDigits:3,maximumFractionDigits:3});
+
+$('#gen').innerHTML = `Generated ${D.generatedAt}<br>${D.instrumentCount} instruments · ${D.liveCount} with live EGX data`;
+$('#liveN').textContent = D.liveCount;
+
+const years = [...new Set(D.instruments.map(i=>i.year))].filter(y=>/\d/.test(y));
+$('#kpis').innerHTML = [
+  ['Rights instruments', D.instrumentCount, 'tracked separately'],
+  ['Live EGX stats', D.liveCount, 'real range + liquidity'],
+  ['Coverage', `${Math.min(...years)}–${Math.max(...years)}`, 'first separate-trading year'],
+  ['Markets', [...new Set(D.instruments.map(i=>i.market))].filter(Boolean).join(' · '), 'EGX segments'],
+].map(k=>`<div class="kpi"><div class="v">${k[1]}</div><div class="l">${k[0]} — ${k[2]}</div></div>`).join('');
+
+let filter='all', q='';
+function rangeBar(p){
+  const lo=p.low, hi=p.high, c=p.refClose;
+  const span=(hi-lo)||1;
+  let pos=((c-lo)/span)*100; pos=Math.max(2,Math.min(98,pos));
+  const rangePct = lo>0 ? ((hi-lo)/lo*100) : null;
+  return `<div class="rangewrap">
+    <div class="rangelabels"><span>Low ${px(lo)}</span>
+      <span>${rangePct!=null?`range ${rangePct.toFixed(0)}%`:''}</span>
+      <span>High ${px(hi)}</span></div>
+    <div class="track">
+      <div class="close-dot" style="left:${pos}%"></div>
+      <div class="closeval" style="left:${pos}%">close ${px(c)}</div>
+    </div></div>`;
+}
+function liveStats(p){
+  return `<div class="stats">
+    <div class="stat"><div class="sv">${fmt(p.volume)}</div><div class="sl">RIGHTS TRADED</div></div>
+    <div class="stat"><div class="sv">${money(p.value)}</div><div class="sl">VALUE (EGP)</div></div>
+    <div class="stat"><div class="sv">${fmt(p.trades)}</div><div class="sl">TRADES</div></div>
+  </div>`;
+}
+function capLine(i){
+  if(i.capitalBefore && i.capitalAfter){
+    const g=((i.capitalAfter-i.capitalBefore)/i.capitalBefore*100);
+    return `<div class="capbar">Capital <b>${money(i.capitalBefore)}</b> → <b>${money(i.capitalAfter)}</b>
+      <span class="grow">+${g.toFixed(0)}%</span></div>`;
+  }
+  if(i.openAnchor) return `<div class="capbar">Right opened at <b class="tick">${px(i.openAnchor)} EGP</b></div>`;
+  return '';
+}
+function windowLine(i){
+  const parts=[];
+  if(i.firstDay) parts.push(`<span class="pill"><span class="k">first</span> ${i.firstDay}</span>`);
+  if(i.lastDay) parts.push(`<span class="pill"><span class="k">last</span> ${i.lastDay}</span>`);
+  if(!i.firstDay && i.decisionDate) parts.push(`<span class="pill"><span class="k">listed</span> ${i.decisionDate}</span>`);
+  if(i.market) parts.push(`<span class="pill">${i.market}</span>`);
+  return `<div class="meta-line">${parts.join('')}</div>`;
+}
+
+function card(i){
+  const live = i.dataStatus==='egx_live';
+  return `<div class="card" data-isin="${i.isin}">
+    <div class="row1">
+      <div>
+        <div class="nm">${i.nameEn||i.isin}</div>
+        <div class="ar">${i.nameAr||''}</div>
+      </div>
+      <span class="badge ${live?'b-live':'b-meta'}">${live?'EGX LIVE':'MASTER LIST'}</span>
+    </div>
+    <div class="meta-line" style="margin-top:8px">
+      ${i.rightsTicker?`<span class="tick">${i.rightsTicker}</span>`:''}
+      <span class="pill"><span class="k">yr</span> ${i.year}</span>
+      <span class="pill"><span class="k">ISIN</span> ${i.isin}</span>
+    </div>
+    ${live ? rangeBar(i.perf)+liveStats(i.perf) : windowLine(i)+capLine(i)}
+  </div>`;
+}
+
+function render(){
+  let list = D.instruments.filter(i=>{
+    if(filter!=='all' && i.dataStatus!==filter) return false;
+    if(q){const h=`${i.nameEn} ${i.nameAr} ${i.rightsTicker} ${i.parentTicker} ${i.isin}`.toLowerCase();
+           if(!h.includes(q)) return false;}
+    return true;
+  });
+  $('#grid').innerHTML = list.length ? list.map(card).join('')
+     : `<div class="empty">No instruments match.</div>`;
+  document.querySelectorAll('.card').forEach(c=>c.onclick=()=>openModal(c.dataset.isin));
+}
+
+function openModal(isin){
+  const i = D.instruments.find(x=>x.isin===isin);
+  const live = i.dataStatus==='egx_live';
+  const p=i.perf;
+  const rows=[];
+  const add=(k,v)=>{ if(v!=null&&v!=='') rows.push(`<div class="item"><div class="k">${k}</div><div class="v">${v}</div></div>`); };
+  add('ISIN', i.isin); add('Rights ticker', i.rightsTicker?`<span class="tick">${i.rightsTicker}</span>`:null);
+  add('Parent ticker', i.parentTicker); add('Market', i.market);
+  add('Round', i.round?`Capital increase #${i.round}`:null);
+  add('First separate-trading day', i.firstDay); add('Last separate-trading day', i.lastDay);
+  add('Listing decision', i.decisionDate);
+  add('# Rights', i.numRights?fmt(i.numRights):null);
+  add('Par value', i.parValue!=null?px(i.parValue)+' EGP':null);
+  add('Capital before', i.capitalBefore?money(i.capitalBefore)+' EGP':null);
+  add('Capital after', i.capitalAfter?money(i.capitalAfter)+' EGP':null);
+  add('Opening price (right)', i.openAnchor?px(i.openAnchor)+' EGP':null);
+  if(live){
+    add('Period high', px(p.high)+' EGP'); add('Period low', px(p.low)+' EGP');
+    add('Trading range', p.low>0?((p.high-p.low)/p.low*100).toFixed(1)+'%':null);
+    add('Latest EGX session', p.refDate); add('Close that session', px(p.refClose)+' EGP');
+    add('Total rights traded', fmt(p.volume)); add('Total value', fmt(p.value,2)+' EGP');
+    add('Total trades', fmt(p.trades));
+  }
+  const note = live
+    ? `Performance figures cover the <b>${p.periodLabel}</b>. Source: ${p.source}.
+       EGX exposes the price <i>envelope</i> and liquidity for this right, not a per-day series.`
+    : `Carried from the verified master list. ${i.anchorNote||''}
+       A day-by-day series for this right is not exposed by any reachable public source.`;
+  $('#modal').innerHTML = `<span class="x" onclick="closeModal()">×</span>
+    <h2>${i.nameEn||i.isin}</h2>
+    <div class="ar" style="direction:rtl;color:var(--muted)">${i.nameAr||''}</div>
+    ${live?rangeBar(p):''}
+    <div class="kv">${rows.join('')}</div>
+    <div class="src">${note}</div>`;
+  $('#overlay').classList.add('show');
+}
+function closeModal(){ $('#overlay').classList.remove('show'); }
+$('#overlay').onclick = e=>{ if(e.target.id==='overlay') closeModal(); };
+document.onkeydown = e=>{ if(e.key==='Escape') closeModal(); };
+
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
+  document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
+  c.classList.add('on'); filter=c.dataset.f; render();
+});
+$('#search').oninput = e=>{ q=e.target.value.trim().toLowerCase(); render(); };
+
+render();
+</script>
+</body>
+</html>
