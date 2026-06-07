@@ -3,280 +3,817 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>EGX Rights-Issue Performance Tracker</title>
+<title>EGX Equity Event Fund Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#0c1118; --panel:#141c27; --panel2:#1b2533; --line:#243042;
-    --ink:#e8eef6; --muted:#8da0b8; --faint:#5c6f88;
-    --gold:#c9a24b; --gold2:#e3c178; --navy:#1f3864;
-    --up:#3ecf8e; --down:#ef6a6a; --accent:#4a9be0;
-    --live:#2f9e6f; --meta:#6b5bbd;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;font-family:"Segoe UI",system-ui,Arial,sans-serif;background:
-       radial-gradient(1200px 600px at 80% -10%, #16202e 0%, var(--bg) 55%) fixed;
-       color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
-  a{color:var(--accent);text-decoration:none}
-  .wrap{max-width:1240px;margin:0 auto;padding:28px 22px 80px}
-  header.top{display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap;justify-content:space-between}
-  .brand h1{margin:0;font-size:25px;letter-spacing:.2px}
-  .brand h1 .mark{color:var(--gold2)}
-  .brand p{margin:6px 0 0;color:var(--muted);font-size:14px;max-width:640px}
-  .gen{font-size:12px;color:var(--faint);text-align:right;white-space:nowrap}
+:root {
+  --ivory:#faf8f4; --cream:#f3efe8; --linen:#ede8df; --parchment:#e6e0d4;
+  --gold:#b8860b; --gold-light:#d4a843; --gold-pale:#f0e6c8; --gold-deep:#8b6914;
+  --ink:#1a1a18; --ink2:#3d3b36; --muted:#7a756b; --faint:#a9a295;
+  --up:#1a7a45; --down:#b33025;
+  --rights-bg:#e8f5ef; --rights-fg:#1a7a45; --rights-bd:#b8dfc8;
+  --parent-bg:#ebe8f5; --parent-fg:#5b4dab; --parent-bd:#c8c0e0;
+  --ipo-bg:#fdf0e2; --ipo-fg:#a86b1f; --ipo-bd:#e8d4b0;
+  --line:#ddd8ce;
+  --sidebar-w:280px;
+  --serif:'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --sans:'DM Sans', 'Segoe UI', system-ui, sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:var(--sans);background:var(--ivory);color:var(--ink);
+  line-height:1.55;-webkit-font-smoothing:antialiased;
+}
 
-  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0 6px}
-  .kpi{background:linear-gradient(180deg,var(--panel),#10171f);border:1px solid var(--line);
-       border-radius:12px;padding:14px 16px}
-  .kpi .v{font-size:24px;font-weight:700;color:var(--gold2)}
-  .kpi .l{font-size:12px;color:var(--muted);margin-top:2px}
+/* ── Layout ─────────────────────────────── */
+.app{display:flex;min-height:100vh}
 
-  .note{margin:20px 0 8px;background:#15202c;border:1px solid var(--line);border-left:3px solid var(--gold);
-        border-radius:10px;padding:13px 16px;font-size:13.3px;color:#c4d2e3}
-  .note b{color:var(--gold2)}
-  .note .tag{display:inline-block;font-size:11px;color:var(--faint);margin-right:6px}
+/* ── Sidebar ────────────────────────────── */
+.sidebar{
+  width:var(--sidebar-w);min-width:var(--sidebar-w);
+  background:linear-gradient(180deg,#1c1b18 0%,#262420 100%);
+  border-right:1px solid #3a362e;
+  padding:28px 20px;overflow-y:auto;
+  display:flex;flex-direction:column;gap:20px;
+  color:#d4cfc4;
+}
+.sidebar-logo{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding-bottom:20px;border-bottom:1px solid #3a362e;
+}
+.sidebar-logo .logo-img{width:90px;height:auto;filter:drop-shadow(0 2px 8px rgba(184,134,11,.25))}
+.sidebar-logo .logo-text{text-align:center;line-height:1.1}
+.sidebar-logo .logo-acumen{
+  display:block;font-family:var(--serif);font-size:22px;font-weight:700;
+  letter-spacing:6px;color:var(--gold-light);
+}
+.sidebar-logo .logo-holding{
+  display:block;font-size:10px;font-weight:600;
+  letter-spacing:5px;color:#8a8477;margin-top:2px;
+}
+.sidebar-brand{
+  display:flex;align-items:center;gap:10px;
+  padding-bottom:18px;border-bottom:1px solid #3a362e;
+}
+.sidebar-brand .icon{
+  width:36px;height:36px;border-radius:8px;
+  background:linear-gradient(135deg,var(--gold),var(--gold-deep));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(184,134,11,.3);
+}
+.sidebar-brand .icon svg{width:18px;height:18px;fill:#fff}
+.sidebar-brand h2{
+  font-family:var(--serif);font-size:15px;font-weight:600;
+  color:var(--gold-light);letter-spacing:.4px;line-height:1.2;
+}
+.sidebar-brand h2 small{display:block;font-size:10px;font-weight:400;color:#8a8477;letter-spacing:1.2px;text-transform:uppercase;margin-top:2px}
 
-  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:22px 0 16px}
-  .search{flex:1;min-width:220px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;
-          padding:10px 13px;color:var(--ink);font-size:14px}
-  .search::placeholder{color:var(--faint)}
-  .chip{background:var(--panel2);border:1px solid var(--line);color:var(--muted);padding:8px 14px;border-radius:20px;
-        font-size:13px;cursor:pointer;user-select:none;transition:.15s}
-  .chip:hover{border-color:var(--gold)}
-  .chip.on{background:var(--gold);color:#1a130a;border-color:var(--gold);font-weight:600}
+.lever{background:rgba(255,255,255,.04);border:1px solid #3a362e;border-radius:10px;padding:14px 14px 12px}
+.lever-title{
+  font-size:10px;color:#8a8477;text-transform:uppercase;letter-spacing:1.2px;
+  margin-bottom:10px;font-weight:600;
+  display:flex;align-items:center;gap:6px;
+}
+.lever-title::before{content:'';width:3px;height:12px;background:var(--gold);border-radius:2px}
+.lever label{display:block;font-size:12px;color:#b0a998;margin-bottom:4px;font-weight:500}
+.lever input[type=date]{
+  width:100%;background:#1a1917;border:1px solid #3a362e;border-radius:7px;
+  color:#d4cfc4;padding:8px 10px;font-size:12px;font-family:var(--sans);margin-bottom:8px;
+  transition:border-color .2s;
+}
+.lever input[type=date]:focus{border-color:var(--gold);outline:none}
+.lever input[type=date]::-webkit-calendar-picker-indicator{filter:invert(.6) sepia(1) hue-rotate(10deg)}
 
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(355px,1fr));gap:16px;margin-top:8px}
-  .card{background:linear-gradient(180deg,var(--panel),#0f161e);border:1px solid var(--line);border-radius:14px;
-        padding:16px 16px 14px;cursor:pointer;transition:.16s;position:relative;overflow:hidden}
-  .card:hover{border-color:#37506f;transform:translateY(-2px);box-shadow:0 10px 28px rgba(0,0,0,.35)}
-  .card .row1{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-  .nm{font-size:15px;font-weight:650;line-height:1.3}
-  .ar{font-size:12px;color:var(--faint);margin-top:2px;direction:rtl}
-  .badge{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap;letter-spacing:.3px}
-  .b-live{background:rgba(47,158,111,.16);color:#5fd6a0;border:1px solid rgba(47,158,111,.4)}
-  .b-meta{background:rgba(107,91,189,.16);color:#a99bee;border:1px solid rgba(107,91,189,.4)}
-  .meta-line{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--muted)}
-  .pill{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:2px 8px}
-  .pill .k{color:var(--faint)}
-  .tick{font-family:"Consolas",monospace;color:var(--gold2);font-size:12px}
+.radio-group{display:flex;gap:5px;margin-bottom:4px}
+.radio-group .rb{flex:1;min-width:0}
+.radio-group input[type=radio]{display:none}
+.radio-group .rl{
+  display:block;text-align:center;padding:7px 4px;font-size:11px;font-weight:500;
+  background:#1a1917;border:1px solid #3a362e;border-radius:7px;cursor:pointer;
+  color:#8a8477;transition:.2s;white-space:nowrap;
+}
+.radio-group .rl:hover{border-color:#5a5548;color:#b0a998}
+.radio-group input:checked+.rl{
+  background:linear-gradient(135deg,var(--gold),var(--gold-deep));
+  color:#fff;border-color:var(--gold);font-weight:600;
+  box-shadow:0 2px 8px rgba(184,134,11,.25);
+}
 
-  /* range bar */
-  .rangewrap{margin:15px 0 6px}
-  .rangelabels{display:flex;justify-content:space-between;font-size:11px;color:var(--faint);margin-bottom:5px}
-  .track{position:relative;height:9px;border-radius:6px;
-         background:linear-gradient(90deg,#26506f,#3a7fb0,#5fd6a0)}
-  .close-dot{position:absolute;top:-4px;width:3px;height:17px;background:var(--gold2);border-radius:2px;
-             box-shadow:0 0 0 2px rgba(201,162,75,.25)}
-  .closeval{position:absolute;top:18px;transform:translateX(-50%);font-size:11px;color:var(--gold2);white-space:nowrap}
+.slider-wrap{margin-top:2px}
+.slider-wrap input[type=range]{
+  width:100%;height:4px;-webkit-appearance:none;appearance:none;
+  background:linear-gradient(90deg,var(--gold) 0%,#3a362e 0%);
+  border-radius:3px;margin:8px 0;outline:none;
+}
+.slider-wrap input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold-light),var(--gold));
+  border:2px solid #1c1b18;cursor:pointer;
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+}
+.slider-val{display:flex;justify-content:space-between;font-size:10px;color:#6a6558}
+.slider-big{text-align:center;font-size:22px;font-weight:700;color:var(--gold-light);margin:2px 0;font-family:var(--serif)}
 
-  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:24px}
-  .stat{background:#0e151d;border:1px solid var(--line);border-radius:8px;padding:8px 9px}
-  .stat .sv{font-size:14px;font-weight:650}
-  .stat .sl{font-size:10.5px;color:var(--faint);margin-top:1px}
+.sidebar-note{font-size:10px;color:#6a6558;line-height:1.5;padding:4px 0}
 
-  .capbar{display:flex;align-items:center;gap:8px;margin-top:13px;font-size:12px}
-  .capbar .seg{height:7px;border-radius:4px}
-  .grow{color:var(--up);font-weight:650}
+/* ── Main ───────────────────────────────── */
+.main{flex:1;padding:32px 36px 60px;overflow-x:auto;min-width:0}
 
-  footer{margin-top:40px;color:var(--faint);font-size:12px;border-top:1px solid var(--line);padding-top:18px}
-  footer code{color:var(--muted);background:#0e151d;padding:1px 6px;border-radius:4px}
+header.top{display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap;justify-content:space-between;margin-bottom:28px}
+.brand h1{font-family:var(--serif);font-size:30px;font-weight:700;letter-spacing:-.2px;color:var(--ink)}
+.brand h1 .mark{color:var(--gold)}
+.brand p{margin:6px 0 0;color:var(--muted);font-size:13.5px;max-width:620px;line-height:1.6}
+.gen{font-size:11px;color:var(--faint);text-align:right;white-space:nowrap;line-height:1.5}
 
-  /* modal */
-  .overlay{position:fixed;inset:0;background:rgba(4,8,12,.72);backdrop-filter:blur(3px);display:none;
-           align-items:flex-start;justify-content:center;padding:40px 18px;z-index:50;overflow:auto}
-  .overlay.show{display:flex}
-  .modal{background:linear-gradient(180deg,var(--panel),#0e151d);border:1px solid var(--line);border-radius:16px;
-         max-width:680px;width:100%;padding:24px}
-  .modal h2{margin:0 0 2px;font-size:20px}
-  .modal .x{float:right;cursor:pointer;color:var(--muted);font-size:22px;line-height:1}
-  .kv{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;margin-top:16px}
-  .kv .item{border-bottom:1px solid var(--line);padding-bottom:7px}
-  .kv .item .k{font-size:11px;color:var(--faint)}
-  .kv .item .v{font-size:14px;margin-top:1px}
-  .modal .src{margin-top:18px;font-size:12px;color:var(--faint)}
-  .empty{grid-column:1/-1;text-align:center;color:var(--faint);padding:50px}
-  @media(max-width:680px){.kpis{grid-template-columns:repeat(2,1fr)}}
+/* ── Fund Summary Banner ────────────────── */
+.fund-banner{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-bottom:24px;
+  background:linear-gradient(135deg,#fdfcf9 0%,var(--cream) 100%);
+  border:1px solid var(--parchment);
+  border-radius:14px;overflow:hidden;position:relative;
+  box-shadow:0 1px 3px rgba(0,0,0,.04);
+}
+.fb-cell{padding:22px 24px;position:relative}
+.fb-cell:not(:last-child){border-right:1px solid var(--parchment)}
+.fb-cell:not(:last-child)::after{
+  content:'';position:absolute;right:-1px;top:50%;transform:translateY(-50%);
+  width:20px;height:20px;
+  background:var(--cream);border:1px solid var(--parchment);border-radius:50%;
+  z-index:1;display:flex;align-items:center;justify-content:center;
+}
+.fb-label{font-size:10px;color:var(--faint);text-transform:uppercase;letter-spacing:1px;font-weight:600}
+.fb-value{font-family:var(--serif);font-size:30px;font-weight:700;color:var(--ink);margin-top:6px}
+.fb-value.green{color:var(--up)}
+.fb-value.red{color:var(--down)}
+.fb-value.gold{color:var(--gold)}
+.fb-sub{font-size:11.5px;color:var(--faint);margin-top:4px}
+.fb-sub .up{color:var(--up);font-weight:600}
+.fb-sub .dn{color:var(--down);font-weight:600}
+
+/* ── Metrics Grid ───────────────────────── */
+.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
+.metrics.row2{grid-template-columns:repeat(3,1fr)}
+.metric{
+  background:var(--cream);border:1px solid var(--parchment);border-radius:10px;
+  padding:16px 14px;text-align:center;position:relative;overflow:visible;
+  transition:box-shadow .2s;
+}
+.metric:hover{box-shadow:0 3px 12px rgba(0,0,0,.06)}
+.metric::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--gold-pale),var(--gold-light),var(--gold-pale));
+  opacity:0;transition:opacity .2s;border-radius:10px 10px 0 0;
+}
+.metric:hover::before{opacity:1}
+.metric .m-head{
+  font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:4px;
+}
+.metric .m-head .info{
+  width:14px;height:14px;border-radius:50%;border:1px solid var(--parchment);
+  font-size:9px;color:var(--faint);display:inline-flex;align-items:center;justify-content:center;cursor:help;
+  font-style:italic;font-family:var(--serif);position:relative;
+}
+.metric .m-head .info .tip{
+  display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);
+  background:var(--ink);color:#e8e4db;font-size:11px;font-style:normal;font-family:var(--sans);
+  font-weight:400;letter-spacing:0;text-transform:none;text-align:left;line-height:1.45;
+  padding:10px 13px;border-radius:8px;width:220px;white-space:normal;
+  box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:10;pointer-events:none;
+}
+.metric .m-head .info .tip::after{
+  content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);
+  border:6px solid transparent;border-top-color:var(--ink);
+}
+.metric .m-head .info:hover .tip{display:block}
+.metric .m-val{font-family:var(--serif);font-size:24px;font-weight:700;margin-top:8px}
+.metric .m-val.green{color:var(--up)}
+.metric .m-val.red{color:var(--down)}
+.metric .m-val.neutral{color:var(--ink2)}
+.metric .m-sub{font-size:10.5px;color:var(--faint);margin-top:4px}
+
+/* ── Table ──────────────────────────────── */
+.tbl-wrap{border:1px solid var(--parchment);border-radius:12px;overflow:hidden;margin-bottom:28px;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.03)}
+.tbl-head{background:var(--cream);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--parchment)}
+.tbl-head h3{font-family:var(--serif);font-size:17px;font-weight:700;color:var(--ink)}
+.tbl-chips{display:flex;gap:6px}
+.chip{
+  padding:5px 14px;border-radius:20px;font-size:11px;cursor:pointer;user-select:none;font-weight:500;
+  background:#fff;border:1px solid var(--parchment);color:var(--muted);transition:.2s;
+}
+.chip:hover{border-color:var(--gold-light);color:var(--gold)}
+.chip.on{
+  background:linear-gradient(135deg,var(--gold),var(--gold-deep));
+  color:#fff;border-color:var(--gold);font-weight:600;
+  box-shadow:0 2px 6px rgba(184,134,11,.2);
+}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{
+  background:var(--cream);color:var(--muted);font-size:10px;text-transform:uppercase;
+  letter-spacing:.7px;padding:11px 14px;text-align:left;border-bottom:1px solid var(--parchment);
+  cursor:pointer;user-select:none;white-space:nowrap;font-weight:600;
+  transition:color .15s;
+}
+thead th:hover{color:var(--gold)}
+thead th .sort-arrow{color:var(--gold);margin-left:2px}
+tbody td{padding:11px 14px;border-bottom:1px solid #f0ece4;white-space:nowrap;color:var(--ink2)}
+tbody tr{transition:background .15s}
+tbody tr:hover{background:var(--gold-pale);background:rgba(240,230,200,.25)}
+tbody tr:last-child td{border-bottom:none}
+.type-badge{font-size:9.5px;font-weight:700;padding:3px 8px;border-radius:5px;letter-spacing:.4px;text-transform:uppercase}
+.type-rights{background:var(--rights-bg);color:var(--rights-fg);border:1px solid var(--rights-bd)}
+.type-parent{background:var(--parent-bg);color:var(--parent-fg);border:1px solid var(--parent-bd)}
+.type-ipo{background:var(--ipo-bg);color:var(--ipo-fg);border:1px solid var(--ipo-bd)}
+.type-stack{display:inline-flex;flex-direction:column;align-items:stretch}
+.type-sub{display:block;margin-top:3px;font-size:8px;padding:2px 6px;text-align:center}
+.pct{font-weight:600}
+.pct.up{color:var(--up)}
+.pct.dn{color:var(--down)}
+.ticker-code{font-family:'DM Mono',Consolas,monospace;font-size:12px;color:var(--gold-deep);font-weight:500}
+
+/* ── Chart ──────────────────────────────── */
+.chart-wrap{
+  background:#fff;border:1px solid var(--parchment);
+  border-radius:14px;padding:24px;margin-bottom:28px;
+  box-shadow:0 1px 3px rgba(0,0,0,.03);
+}
+.chart-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.chart-header h3{font-family:var(--serif);font-size:17px;font-weight:700;color:var(--ink)}
+.chart-legend{display:flex;gap:16px;font-size:11px;color:var(--muted);font-weight:500}
+.chart-legend span{display:flex;align-items:center;gap:5px}
+.chart-legend span::before{content:'';display:inline-block;width:16px;height:3px;border-radius:2px}
+.chart-legend .l-fund::before{background:var(--gold);height:3px}
+.chart-legend .l-egx::before{background:#6b93c0;height:2px;border-style:dashed;border-width:0;background:repeating-linear-gradient(90deg,#6b93c0 0,#6b93c0 6px,transparent 6px,transparent 9px)}
+.chart-legend .l-tbill::before{background:repeating-linear-gradient(90deg,#aaa 0,#aaa 4px,transparent 4px,transparent 7px)}
+.chart-container{position:relative}
+.chart-container svg{max-height:340px}
+
+/* ── Footer ─────────────────────────────── */
+footer{color:var(--faint);font-size:11.5px;border-top:1px solid var(--parchment);padding-top:18px;margin-top:24px;line-height:1.7}
+footer code{color:var(--muted);background:var(--cream);padding:2px 7px;border-radius:4px;font-size:11px;border:1px solid var(--parchment)}
+footer b{color:var(--ink2)}
+
+/* ── Responsive ─────────────────────────── */
+@media(max-width:1100px){
+  .app{flex-direction:column}
+  .sidebar{width:100%;min-width:auto;flex-direction:row;flex-wrap:wrap;border-right:none;border-bottom:1px solid #3a362e}
+  .sidebar-brand{width:100%}
+  .lever{flex:1;min-width:200px}
+  .fund-banner{grid-template-columns:repeat(2,1fr)}
+  .metrics{grid-template-columns:repeat(3,1fr)}
+  .main{padding:24px 20px 40px}
+}
+@media(max-width:680px){
+  .metrics,.metrics.row2{grid-template-columns:repeat(2,1fr)}
+  .fund-banner{grid-template-columns:1fr}
+  .fb-cell:not(:last-child){border-right:none;border-bottom:1px solid var(--parchment)}
+  .fb-cell:not(:last-child)::after{display:none}
+}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="app">
+
+<!-- ── SIDEBAR: Feature Levers ────────────────────────────────────── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <img src="assets/pegasus.png" alt="Acumen Holding" class="logo-img">
+    <div class="logo-text">
+      <span class="logo-acumen">ACUMEN</span>
+      <span class="logo-holding">HOLDING</span>
+    </div>
+  </div>
+
+  <div class="sidebar-brand">
+    <div class="icon">
+      <svg viewBox="0 0 24 24"><path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/></svg>
+    </div>
+    <h2>Feature Levers<small>Configuration</small></h2>
+  </div>
+
+  <div class="lever">
+    <div class="lever-title">Time Period</div>
+    <label>Start Date</label>
+    <input type="date" id="startDate" value="2021-04-07">
+    <label>End Date</label>
+    <input type="date" id="endDate" value="2026-06-07">
+  </div>
+
+  <div class="lever">
+    <div class="lever-title">Weighting</div>
+    <div class="radio-group">
+      <div class="rb"><input type="radio" name="weight" id="wEq" value="equal" checked><label class="rl" for="wEq">Equal</label></div>
+      <div class="rb"><input type="radio" name="weight" id="wOff" value="offer"><label class="rl" for="wOff">Offer Size</label></div>
+    </div>
+  </div>
+
+  <div class="lever">
+    <div class="lever-title">Position Cap</div>
+    <div class="radio-group">
+      <div class="rb"><input type="radio" name="cap" id="c5" value="0.05"><label class="rl" for="c5">5%</label></div>
+      <div class="rb"><input type="radio" name="cap" id="c10" value="0.10" checked><label class="rl" for="c10">10%</label></div>
+      <div class="rb"><input type="radio" name="cap" id="c15" value="0.15"><label class="rl" for="c15">15%</label></div>
+    </div>
+  </div>
+
+  <div class="lever">
+    <div class="lever-title">T-Bill Buffer</div>
+    <div class="slider-big" id="tbillDisplay">25%</div>
+    <div class="slider-wrap">
+      <input type="range" id="tbillSlider" min="5" max="100" value="25" step="1">
+      <div class="slider-val"><span>5%</span><span>100%</span></div>
+    </div>
+    <div class="sidebar-note">Portion of fund allocated to Egyptian T-bills as a cash buffer. Remainder is deployed into event positions.</div>
+  </div>
+
+  <div class="sidebar-note" style="margin-top:auto;border-top:1px solid #3a362e;padding-top:12px">
+    Parent company prices are estimates pending live feed integration.
+    Rights issue entry dates are approximate based on EGX trading windows.
+  </div>
+</aside>
+
+<!-- ── MAIN CONTENT ──────────────────────────────────────────────── -->
+<div class="main">
   <header class="top">
     <div class="brand">
-      <h1>EGX <span class="mark">Rights-Issue</span> Performance Tracker</h1>
-      <p>Every Egyptian Exchange subscription-right that traded as a <b>separate instrument</b> since
-         April 2021, shown one by one with how it performed over the window it was tradable.</p>
+      <h1>EGX <span class="mark">Equity Event</span> Fund Simulator</h1>
+      <p>Simulates a hypothetical fund investing in EGX equity events — rights issues,
+         their parent companies, and IPOs — with configurable weighting, position caps, and T-bill buffer.</p>
     </div>
     <div class="gen" id="gen"></div>
   </header>
 
-  <div class="kpis" id="kpis"></div>
+  <!-- Fund Performance Banner -->
+  <div class="fund-banner" id="fundBanner"></div>
 
-  <div class="note">
-    <span class="tag">DATA NOTE</span>
-    <b id="liveN"></b> instruments carry <b>live EGX trading stats</b> — the full-life price range, traded
-    volume/value and number of trades pulled from EGX's <i>Historical Statistics → Stocks Data</i> tool
-    (egx.com.eg) for the rights instruments it currently exposes. EGX publishes these as a performance
-    <i>envelope</i> + a chart image, <b>not</b> a downloadable per-day OHLCV series, so each right shows its
-    real trading range and liquidity rather than a fabricated daily line. The remaining instruments
-    (2021–2025) are carried from the scraper's verified master list with their windows and capital-increase
-    economics; their day-by-day series is not exposed by any public source (it predates EGX's 3-year tool window).
+  <!-- Metrics -->
+  <div class="metrics" id="metricsRow1"></div>
+  <div class="metrics row2" id="metricsRow2"></div>
+
+  <!-- Assets Table -->
+  <div class="tbl-wrap">
+    <div class="tbl-head">
+      <h3>Fund Holdings</h3>
+      <div class="tbl-chips">
+        <span class="chip on" data-f="all">All</span>
+        <span class="chip" data-f="rights">Rights</span>
+        <span class="chip" data-f="parent">Parent</span>
+        <span class="chip" data-f="ipo">IPO</span>
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead><tr id="tableHead"></tr></thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
   </div>
 
-  <div class="controls">
-    <input class="search" id="search" placeholder="Search company, ticker or ISIN…">
-    <span class="chip on" data-f="all">All</span>
-    <span class="chip" data-f="egx_live">Live EGX stats</span>
-    <span class="chip" data-f="metadata_only">Master-list metadata</span>
+  <!-- Chart -->
+  <div class="chart-wrap">
+    <div class="chart-header">
+      <h3>Fund NAV Performance</h3>
+      <div class="chart-legend">
+        <span class="l-fund">Fund NAV</span>
+        <span class="l-egx">EGX30 (rebased)</span>
+        <span class="l-tbill">T-Bill Only</span>
+      </div>
+    </div>
+    <div class="chart-container" id="chartContainer"></div>
   </div>
-
-  <div class="grid" id="grid"></div>
 
   <footer>
-    Sources — master list: EGX listing-committee notices &amp; dated disclosures (scraper seed).
-    Live stats: <code>egx.com.eg → Market Data → Historical Statistics → Stocks Data</code>, captured via a
-    real browser session (the server-side scrapers are geo-blocked). Built from
-    <code>egx_rights.sqlite</code>. Figures are EGX official; rounding as published.
+    Sources — Rights data: <code>egx.com.eg</code> Historical Statistics (live EGX stats).
+    IPO data: EGX listing notices, press releases. Macro data: CBE, CAPMAS, EGX.
+    Parent company prices are estimates. T-bill rates are 91-day auction yields.
+    This is a <b>simulation</b> — not actual fund performance.
   </footer>
 </div>
 
-<div class="overlay" id="overlay"><div class="modal" id="modal"></div></div>
+</div>
 
-<script src="data/data.js"></script>
+<script src="data/fund_data.js"></script>
 <script>
-const D = window.RIGHTS_DATA;
+const D = window.FUND_DATA;
 const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+
+// ── Formatting helpers ──────────────────────────────────────────────
 const fmt = (n,d=0)=> n==null?'—':Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
-const money = n => n==null?'—':(n>=1e9?(n/1e9).toFixed(2)+'B':n>=1e6?(n/1e6).toFixed(1)+'M':fmt(n));
-const px = n => n==null?'—':Number(n).toLocaleString('en-US',{minimumFractionDigits:3,maximumFractionDigits:3});
+const money = n=> n==null?'—':(n>=1e9?(n/1e9).toFixed(2)+'B':n>=1e6?(n/1e6).toFixed(1)+'M':fmt(n));
+const px = (n,d=3)=> n==null?'—':Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct = (n,d=1)=> n==null?'—':(n>=0?'+':'')+n.toFixed(d)+'%';
+const pctClass = n=> n>=0?'up':'dn';
 
-$('#gen').innerHTML = `Generated ${D.generatedAt}<br>${D.instrumentCount} instruments · ${D.liveCount} with live EGX data`;
-$('#liveN').textContent = D.liveCount;
-
-const years = [...new Set(D.instruments.map(i=>i.year))].filter(y=>/\d/.test(y));
-$('#kpis').innerHTML = [
-  ['Rights instruments', D.instrumentCount, 'tracked separately'],
-  ['Live EGX stats', D.liveCount, 'real range + liquidity'],
-  ['Coverage', `${Math.min(...years)}–${Math.max(...years)}`, 'first separate-trading year'],
-  ['Markets', [...new Set(D.instruments.map(i=>i.market))].filter(Boolean).join(' · '), 'EGX segments'],
-].map(k=>`<div class="kpi"><div class="v">${k[1]}</div><div class="l">${k[0]} — ${k[2]}</div></div>`).join('');
-
-let filter='all', q='';
-function rangeBar(p){
-  const lo=p.low, hi=p.high, c=p.refClose;
-  const span=(hi-lo)||1;
-  let pos=((c-lo)/span)*100; pos=Math.max(2,Math.min(98,pos));
-  const rangePct = lo>0 ? ((hi-lo)/lo*100) : null;
-  return `<div class="rangewrap">
-    <div class="rangelabels"><span>Low ${px(lo)}</span>
-      <span>${rangePct!=null?`range ${rangePct.toFixed(0)}%`:''}</span>
-      <span>High ${px(hi)}</span></div>
-    <div class="track">
-      <div class="close-dot" style="left:${pos}%"></div>
-      <div class="closeval" style="left:${pos}%">close ${px(c)}</div>
-    </div></div>`;
-}
-function liveStats(p){
-  return `<div class="stats">
-    <div class="stat"><div class="sv">${fmt(p.volume)}</div><div class="sl">RIGHTS TRADED</div></div>
-    <div class="stat"><div class="sv">${money(p.value)}</div><div class="sl">VALUE (EGP)</div></div>
-    <div class="stat"><div class="sv">${fmt(p.trades)}</div><div class="sl">TRADES</div></div>
-  </div>`;
-}
-function capLine(i){
-  if(i.capitalBefore && i.capitalAfter){
-    const g=((i.capitalAfter-i.capitalBefore)/i.capitalBefore*100);
-    return `<div class="capbar">Capital <b>${money(i.capitalBefore)}</b> → <b>${money(i.capitalAfter)}</b>
-      <span class="grow">+${g.toFixed(0)}%</span></div>`;
+// ── Macro interpolation helper ──────────────────────────────────────
+function interpMacro(series, dateStr, valKey) {
+  const k = valKey || 'r';
+  if (!series.length) return null;
+  const target = dateStr.slice(0,7);
+  for (let i = series.length-1; i >= 0; i--) {
+    if (series[i].d <= target) {
+      if (i < series.length-1) {
+        const a = series[i], b = series[i+1];
+        const tA = new Date(a.d+'-01'), tB = new Date(b.d+'-01'), tT = new Date(target+'-01');
+        const frac = (tT-tA)/(tB-tA);
+        const va = a[k] != null ? a[k] : a.v;
+        const vb = b[k] != null ? b[k] : b.v;
+        return va + frac * (vb - va);
+      }
+      return series[i][k] != null ? series[i][k] : series[i].v;
+    }
   }
-  if(i.openAnchor) return `<div class="capbar">Right opened at <b class="tick">${px(i.openAnchor)} EGP</b></div>`;
-  return '';
-}
-function windowLine(i){
-  const parts=[];
-  if(i.firstDay) parts.push(`<span class="pill"><span class="k">first</span> ${i.firstDay}</span>`);
-  if(i.lastDay) parts.push(`<span class="pill"><span class="k">last</span> ${i.lastDay}</span>`);
-  if(!i.firstDay && i.decisionDate) parts.push(`<span class="pill"><span class="k">listed</span> ${i.decisionDate}</span>`);
-  if(i.market) parts.push(`<span class="pill">${i.market}</span>`);
-  return `<div class="meta-line">${parts.join('')}</div>`;
+  return series[0][k] != null ? series[0][k] : series[0].v;
 }
 
-function card(i){
-  const live = i.dataStatus==='egx_live';
-  return `<div class="card" data-isin="${i.isin}">
-    <div class="row1">
-      <div>
-        <div class="nm">${i.nameEn||i.isin}</div>
-        <div class="ar">${i.nameAr||''}</div>
-      </div>
-      <span class="badge ${live?'b-live':'b-meta'}">${live?'EGX LIVE':'MASTER LIST'}</span>
-    </div>
-    <div class="meta-line" style="margin-top:8px">
-      ${i.rightsTicker?`<span class="tick">${i.rightsTicker}</span>`:''}
-      <span class="pill"><span class="k">yr</span> ${i.year}</span>
-      <span class="pill"><span class="k">ISIN</span> ${i.isin}</span>
-    </div>
-    ${live ? rangeBar(i.perf)+liveStats(i.perf) : windowLine(i)+capLine(i)}
-  </div>`;
+// ── Read lever state ────────────────────────────────────────────────
+function getLevers() {
+  return {
+    startDate: $('#startDate').value,
+    endDate:   $('#endDate').value,
+    weighting: document.querySelector('input[name=weight]:checked').value,
+    posCap:    parseFloat(document.querySelector('input[name=cap]:checked').value),
+    tbillPct:  parseInt($('#tbillSlider').value) / 100
+  };
 }
 
-function render(){
-  let list = D.instruments.filter(i=>{
-    if(filter!=='all' && i.dataStatus!==filter) return false;
-    if(q){const h=`${i.nameEn} ${i.nameAr} ${i.rightsTicker} ${i.parentTicker} ${i.isin}`.toLowerCase();
-           if(!h.includes(q)) return false;}
+// ── Generate monthly date series ────────────────────────────────────
+function monthRange(start, end) {
+  const dates = [];
+  let d = new Date(start);
+  const e = new Date(end);
+  while (d <= e) {
+    dates.push(d.toISOString().slice(0,10));
+    d.setMonth(d.getMonth()+1);
+  }
+  const last = dates[dates.length-1];
+  if (last < end) dates.push(end);
+  return dates;
+}
+
+// ── Compute individual asset return at a given date ─────────────────
+function assetReturnAtDate(asset, dateStr) {
+  const entry = asset.entryDate;
+  const exit  = asset.exitDate || '2026-06-07';
+  if (dateStr < entry) return null;
+  if (dateStr >= exit) {
+    return (asset.currentPrice - asset.entryPrice) / asset.entryPrice;
+  }
+  const t0 = new Date(entry).getTime();
+  const t1 = new Date(exit).getTime();
+  const tc = new Date(dateStr).getTime();
+  const frac = (tc - t0) / (t1 - t0);
+  const peakFrac = 0.4;
+  let price;
+  if (frac <= peakFrac) {
+    const f = frac / peakFrac;
+    price = asset.entryPrice + f * (asset.high - asset.entryPrice);
+  } else {
+    const f = (frac - peakFrac) / (1 - peakFrac);
+    price = asset.high + f * (asset.currentPrice - asset.high);
+  }
+  return (price - asset.entryPrice) / asset.entryPrice;
+}
+
+// ── Run fund simulation ─────────────────────────────────────────────
+function simulate(levers) {
+  const months = monthRange(levers.startDate, levers.endDate);
+  const initialNAV = 10.00;
+  const navSeries = [];
+  const egxSeries = [];
+  const tbillOnlySeries = [];
+
+  const eligibleAssets = D.assets.filter(a => {
+    if (a.entryDate > levers.endDate) return false;
+    const exit = a.exitDate || '2026-06-07';
+    if (exit < levers.startDate) return false;
     return true;
   });
-  $('#grid').innerHTML = list.length ? list.map(card).join('')
-     : `<div class="empty">No instruments match.</div>`;
-  document.querySelectorAll('.card').forEach(c=>c.onclick=()=>openModal(c.dataset.isin));
-}
 
-function openModal(isin){
-  const i = D.instruments.find(x=>x.isin===isin);
-  const live = i.dataStatus==='egx_live';
-  const p=i.perf;
-  const rows=[];
-  const add=(k,v)=>{ if(v!=null&&v!=='') rows.push(`<div class="item"><div class="k">${k}</div><div class="v">${v}</div></div>`); };
-  add('ISIN', i.isin); add('Rights ticker', i.rightsTicker?`<span class="tick">${i.rightsTicker}</span>`:null);
-  add('Parent ticker', i.parentTicker); add('Market', i.market);
-  add('Round', i.round?`Capital increase #${i.round}`:null);
-  add('First separate-trading day', i.firstDay); add('Last separate-trading day', i.lastDay);
-  add('Listing decision', i.decisionDate);
-  add('# Rights', i.numRights?fmt(i.numRights):null);
-  add('Par value', i.parValue!=null?px(i.parValue)+' EGP':null);
-  add('Capital before', i.capitalBefore?money(i.capitalBefore)+' EGP':null);
-  add('Capital after', i.capitalAfter?money(i.capitalAfter)+' EGP':null);
-  add('Opening price (right)', i.openAnchor?px(i.openAnchor)+' EGP':null);
-  if(live){
-    add('Period high', px(p.high)+' EGP'); add('Period low', px(p.low)+' EGP');
-    add('Trading range', p.low>0?((p.high-p.low)/p.low*100).toFixed(1)+'%':null);
-    add('Latest EGX session', p.refDate); add('Close that session', px(p.refClose)+' EGP');
-    add('Total rights traded', fmt(p.volume)); add('Total value', fmt(p.value,2)+' EGP');
-    add('Total trades', fmt(p.trades));
+  let nav = initialNAV;
+  let tbillOnlyNav = initialNAV;
+  let peakNav = initialNAV;
+  let maxDD = 0;
+  const monthlyReturns = [];
+  const egx30Start = interpMacro(D.macro.egx30, levers.startDate, 'v');
+
+  for (let m = 0; m < months.length; m++) {
+    const date = months[m];
+    const annualTbill = interpMacro(D.macro.tbill, date, 'r') || 0.20;
+    const monthlyTbill = Math.pow(1 + annualTbill, 1/12) - 1;
+    const egx30Now = interpMacro(D.macro.egx30, date, 'v');
+    egxSeries.push({ x: date, y: initialNAV * (egx30Now / egx30Start) });
+
+    if (m === 0) {
+      tbillOnlySeries.push({ x: date, y: tbillOnlyNav });
+      navSeries.push({ x: date, y: nav });
+      continue;
+    }
+    tbillOnlyNav *= (1 + monthlyTbill);
+    tbillOnlySeries.push({ x: date, y: tbillOnlyNav });
+
+    const active = eligibleAssets.filter(a => date >= a.entryDate);
+    let weights = {};
+    if (active.length > 0) {
+      const equityPct = 1 - levers.tbillPct;
+      if (levers.weighting === 'equal') {
+        const w = equityPct / active.length;
+        active.forEach(a => { weights[a.id] = Math.min(w, levers.posCap); });
+      } else {
+        const totalOffer = active.reduce((s, a) => s + (a.offerSize || 0), 0);
+        active.forEach(a => {
+          const raw = totalOffer > 0 ? (a.offerSize || 0) / totalOffer * equityPct : equityPct / active.length;
+          weights[a.id] = Math.min(raw, levers.posCap);
+        });
+      }
+      const totalW = Object.values(weights).reduce((s, w) => s + w, 0);
+      const cappedTotal = Math.min(totalW, 1 - levers.tbillPct);
+      if (totalW > 0 && totalW !== cappedTotal) {
+        const scale = cappedTotal / totalW;
+        Object.keys(weights).forEach(k => { weights[k] *= scale; });
+      }
+    }
+
+    let portfolioReturn = levers.tbillPct * monthlyTbill;
+    active.forEach(a => {
+      const retNow = assetReturnAtDate(a, date) || 0;
+      const retPrev = assetReturnAtDate(a, months[m-1]) || 0;
+      const assetMonthRet = (1 + retNow) / (1 + retPrev) - 1;
+      portfolioReturn += (weights[a.id] || 0) * assetMonthRet;
+    });
+    const allocatedEquity = Object.values(weights).reduce((s, w) => s + w, 0);
+    const unallocated = 1 - levers.tbillPct - allocatedEquity;
+    if (unallocated > 0) portfolioReturn += unallocated * monthlyTbill;
+
+    nav *= (1 + portfolioReturn);
+    monthlyReturns.push(portfolioReturn);
+    if (nav > peakNav) peakNav = nav;
+    const dd = (nav - peakNav) / peakNav;
+    if (dd < maxDD) maxDD = dd;
+    navSeries.push({ x: date, y: nav });
   }
-  const note = live
-    ? `Performance figures cover the <b>${p.periodLabel}</b>. Source: ${p.source}.
-       EGX exposes the price <i>envelope</i> and liquidity for this right, not a per-day series.`
-    : `Carried from the verified master list. ${i.anchorNote||''}
-       A day-by-day series for this right is not exposed by any reachable public source.`;
-  $('#modal').innerHTML = `<span class="x" onclick="closeModal()">×</span>
-    <h2>${i.nameEn||i.isin}</h2>
-    <div class="ar" style="direction:rtl;color:var(--muted)">${i.nameAr||''}</div>
-    ${live?rangeBar(p):''}
-    <div class="kv">${rows.join('')}</div>
-    <div class="src">${note}</div>`;
-  $('#overlay').classList.add('show');
+
+  const years = (new Date(levers.endDate) - new Date(levers.startDate)) / (365.25*24*3600*1000);
+  const totalReturn = (nav / initialNAV) - 1;
+  const cagr = Math.pow(nav / initialNAV, 1 / years) - 1;
+  const cpiStart = interpMacro(D.macro.cpi, levers.startDate, 'v');
+  const cpiEnd   = interpMacro(D.macro.cpi, levers.endDate, 'v');
+  const inflation = (cpiEnd / cpiStart) - 1;
+  const realPrice = nav / (cpiEnd / cpiStart);
+  const realTotalReturn = ((1 + totalReturn) / (1 + inflation)) - 1;
+  const realReturn = Math.pow(1 + realTotalReturn, 1 / years) - 1;
+  const fxStart = interpMacro(D.macro.usdEgp, levers.startDate, 'r');
+  const fxEnd   = interpMacro(D.macro.usdEgp, levers.endDate, 'r');
+  const usdStart = initialNAV / fxStart;
+  const usdEnd   = nav / fxEnd;
+  const usdTotalReturn = (usdEnd / usdStart) - 1;
+  const usdReturn = Math.pow(1 + usdTotalReturn, 1 / years) - 1;
+  const mean = monthlyReturns.reduce((s,r)=>s+r,0) / (monthlyReturns.length||1);
+  const variance = monthlyReturns.reduce((s,r)=>s+Math.pow(r-mean,2),0) / (monthlyReturns.length||1);
+  const annualVol = Math.sqrt(variance) * Math.sqrt(12);
+  const avgTbill = D.macro.tbill.reduce((s,t)=>s+t.r,0) / D.macro.tbill.length;
+  const sharpe = annualVol > 0 ? (cagr - avgTbill) / annualVol : 0;
+  const egx30End = interpMacro(D.macro.egx30, levers.endDate, 'v');
+  const egx30Ret = Math.pow(egx30End / egx30Start, 1/years) - 1;
+  const alpha = cagr - egx30Ret;
+  const finishedAssets = eligibleAssets.filter(a => a.entryDate <= levers.endDate);
+  const winners = finishedAssets.filter(a => { const r = assetReturnAtDate(a, levers.endDate); return r !== null && r > 0; });
+  const hitRate = finishedAssets.length > 0 ? winners.length / finishedAssets.length : 0;
+
+  return { navSeries, egxSeries, tbillOnlySeries, initialNAV, finalNAV: nav, realPrice, usdEnd,
+    totalReturn, cagr, realReturn, realTotalReturn, usdReturn, usdTotalReturn, maxDD, sharpe, alpha, hitRate, annualVol, years,
+    fxStart, fxEnd, cpiEnd, cpiStart, inflation, eligibleAssets };
 }
-function closeModal(){ $('#overlay').classList.remove('show'); }
-$('#overlay').onclick = e=>{ if(e.target.id==='overlay') closeModal(); };
-document.onkeydown = e=>{ if(e.key==='Escape') closeModal(); };
 
-document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
-  document.querySelectorAll('.chip').forEach(x=>x.classList.remove('on'));
-  c.classList.add('on'); filter=c.dataset.f; render();
+// ── Render Fund Banner ──────────────────────────────────────────────
+function renderBanner(sim) {
+  const L = getLevers();
+  $('#fundBanner').innerHTML = `
+    <div class="fb-cell">
+      <div class="fb-label">Launch Price</div>
+      <div class="fb-value">${sim.initialNAV.toFixed(2)} EGP</div>
+      <div class="fb-sub">${L.startDate}</div>
+    </div>
+    <div class="fb-cell">
+      <div class="fb-label">Final Price</div>
+      <div class="fb-value green">${sim.finalNAV.toFixed(2)} EGP</div>
+      <div class="fb-sub">${L.endDate} &middot; <span class="${pctClass(sim.totalReturn*100)}">${pct(sim.totalReturn*100)}</span> total</div>
+    </div>
+    <div class="fb-cell">
+      <div class="fb-label">Final Price (Real)</div>
+      <div class="fb-value ${sim.realTotalReturn>=0?'green':'red'}">${sim.realPrice.toFixed(2)} EGP</div>
+      <div class="fb-sub">After inflation &middot; <span class="${pctClass(sim.realTotalReturn*100)}">${pct(sim.realTotalReturn*100)}</span></div>
+    </div>
+    <div class="fb-cell">
+      <div class="fb-label">Final Price (USD)</div>
+      <div class="fb-value ${sim.usdReturn>=0?'gold':'red'}">$${sim.usdEnd.toFixed(4)}</div>
+      <div class="fb-sub">Hard currency &middot; <span class="${pctClass(sim.usdTotalReturn*100)}">${pct(sim.usdTotalReturn*100)}</span></div>
+    </div>`;
+}
+
+// ── Render Metrics ──────────────────────────────────────────────────
+function renderMetrics(sim) {
+  function mc(label, value, sub, valClass, tip) {
+    return `<div class="metric">
+      <div class="m-head">${label} <span class="info">i<span class="tip">${tip}</span></span></div>
+      <div class="m-val ${valClass||'neutral'}">${value}</div>
+      <div class="m-sub">${sub}</div>
+    </div>`;
+  }
+  $('#metricsRow1').innerHTML =
+    mc('CAGR (Nominal)', pct(sim.cagr*100), 'EGP', sim.cagr>=0?'green':'red',
+      'Compound Annual Growth Rate in nominal EGP terms. Does not adjust for inflation or currency depreciation.') +
+    mc('Real Return (CPI)', pct(sim.realReturn*100), 'Purchasing power', sim.realReturn>=0?'green':'red',
+      'Return adjusted for Egyptian CPI inflation. Measures actual purchasing power gained or lost.') +
+    mc('USD Return', pct(sim.usdReturn*100), 'Hard currency', sim.usdReturn>=0?'green':'red',
+      'Return measured in US dollars, accounting for EGP/USD exchange rate movements over the period.') +
+    mc('Max Drawdown', pct(sim.maxDD*100), 'Peak-to-trough', 'red',
+      'Largest peak-to-trough decline in fund NAV during the simulation period. Measures worst-case downside risk.') +
+    mc('Sharpe Ratio', sim.sharpe.toFixed(2), 'vs T-bills', sim.sharpe>=0?'green':'red',
+      'Risk-adjusted return: excess return over Egyptian T-bill rate per unit of volatility. Higher is better; above 1.0 is strong.');
+  $('#metricsRow2').innerHTML =
+    mc('Alpha vs EGX30', (sim.alpha*100>=0?'+':'')+(sim.alpha*100).toFixed(1)+'pp', 'Annualized', sim.alpha>=0?'green':'red',
+      'Annualized excess return over the EGX30 benchmark index. Positive alpha means the fund outperformed the market.') +
+    mc('Hit Rate', (sim.hitRate*100).toFixed(0)+'%', 'Winners / Total', sim.hitRate>=0.5?'green':'red',
+      'Percentage of positions that generated a positive return. Measures how often the fund picks winners.') +
+    mc('Volatility', (sim.annualVol*100).toFixed(1)+'%', 'Annualized', 'neutral',
+      'Annualized standard deviation of monthly returns. Measures the dispersion of returns — higher means more uncertainty.');
+}
+
+// ── Render Table ────────────────────────────────────────────────────
+let tableFilter = 'all';
+let sortCol = null, sortDir = 1;
+
+const COLS = [
+  {key:'name',    label:'Asset',          fmt: a=> `<b style="color:var(--ink)">${a.name}</b>`},
+  {key:'type',    label:'Type',           fmt: a=> {
+    if (a.type === 'parent') {
+      // Check if this parent has a matching rights issue or IPO child
+      const hasRightsChild = D.assets.some(x => x.type === 'rights' && x.parentTicker === a.id);
+      const hasIPOChild = D.assets.some(x => x.type === 'ipo' && x.parentTicker === a.id);
+      const subLabel = hasRightsChild ? 'Rights' : hasIPOChild ? 'IPO' : '';
+      const subClass = hasRightsChild ? 'type-rights' : hasIPOChild ? 'type-ipo' : '';
+      return `<div class="type-stack"><span class="type-badge type-parent" style="display:block;text-align:center">PARENT</span>${subLabel ? `<span class="type-badge type-sub ${subClass}">${subLabel}</span>` : ''}</div>`;
+    }
+    return `<span class="type-badge type-${a.type}">${a.type.toUpperCase()}</span>`;
+  }},
+  {key:'ticker',  label:'Ticker',         fmt: a=> `<span class="ticker-code">${a.ticker||'—'}</span>`},
+  {key:'low',     label:'Low',            fmt: a=> px(a.low), num: a=>a.low},
+  {key:'high',    label:'High',           fmt: a=> px(a.high), num: a=>a.high},
+  {key:'return',  label:'Return',         fmt: a=> {
+    const r = a.currentPrice && a.entryPrice ? ((a.currentPrice-a.entryPrice)/a.entryPrice*100) : null;
+    return r!=null ? `<span class="pct ${r>=0?'up':'dn'}">${pct(r)}</span>` : '—';
+  }, num: a=> a.currentPrice && a.entryPrice ? (a.currentPrice-a.entryPrice)/a.entryPrice : -999},
+  {key:'rightsTraded', label:'Rights / Subs', fmt: a=> a.rightsTraded ? fmt(a.rightsTraded) : '—', num: a=>a.rightsTraded||0},
+  {key:'volume',  label:'Volume (EGP)',   fmt: a=> money(a.volume), num: a=>a.volume||0},
+  {key:'offerSize', label:'Offer / Raised', fmt: a=> money(a.offerSize), num: a=>a.offerSize||0},
+  {key:'trades',  label:'Trades',         fmt: a=> a.trades ? fmt(a.trades) : '—', num: a=>a.trades||0},
+];
+
+function renderTableHead() {
+  $('#tableHead').innerHTML = COLS.map((c,i) =>
+    `<th data-col="${i}">${c.label}${sortCol===i?` <span class="sort-arrow">${sortDir===1?'▲':'▼'}</span>`:''}</th>`
+  ).join('');
+  $$('#tableHead th').forEach(th => {
+    th.onclick = () => {
+      const ci = parseInt(th.dataset.col);
+      if (sortCol === ci) sortDir *= -1;
+      else { sortCol = ci; sortDir = 1; }
+      renderTable();
+    };
+  });
+}
+
+function renderTable() {
+  renderTableHead();
+  const levers = getLevers();
+  let assets = D.assets.filter(a => {
+    if (tableFilter !== 'all' && a.type !== tableFilter) return false;
+    if (a.entryDate > levers.endDate) return false;
+    return true;
+  });
+  if (sortCol !== null && COLS[sortCol].num) {
+    const numFn = COLS[sortCol].num;
+    assets = [...assets].sort((a,b) => (numFn(a) - numFn(b)) * sortDir);
+  }
+  $('#tableBody').innerHTML = assets.map(a =>
+    `<tr>${COLS.map(c => `<td>${c.fmt(a)}</td>`).join('')}</tr>`
+  ).join('') || `<tr><td colspan="${COLS.length}" style="text-align:center;color:var(--faint);padding:40px">No assets in this period.</td></tr>`;
+}
+
+// ── SVG Chart ───────────────────────────────────────────────────────
+function renderChart(sim) {
+  const W = 1100, H = 320, pad = {t:20, r:20, b:50, l:55};
+  const cw = W - pad.l - pad.r, ch = H - pad.t - pad.b;
+  const allY = [...sim.navSeries, ...sim.egxSeries, ...sim.tbillOnlySeries].map(p => p.y);
+  const minY = Math.floor(Math.min(...allY));
+  const maxY = Math.ceil(Math.max(...allY) * 1.05);
+  const n = sim.navSeries.length;
+  const sx = i => pad.l + (i / (n-1)) * cw;
+  const sy = v => pad.t + ch - ((v - minY) / (maxY - minY)) * ch;
+
+  function polyline(series, color, dash, width) {
+    const pts = series.map((p,i) => `${sx(i).toFixed(1)},${sy(p.y).toFixed(1)}`).join(' ');
+    return `<polyline points="${pts}" fill="none" stroke="${color}" stroke-width="${width||2.5}"${dash?` stroke-dasharray="${dash}"`:''} stroke-linejoin="round" stroke-linecap="round"/>`;
+  }
+
+  const fundPts = sim.navSeries.map((p,i) => `${sx(i).toFixed(1)},${sy(p.y).toFixed(1)}`);
+  const areaPath = `M${fundPts[0]} ${fundPts.join(' L')} L${sx(n-1).toFixed(1)},${(pad.t+ch).toFixed(1)} L${sx(0).toFixed(1)},${(pad.t+ch).toFixed(1)} Z`;
+
+  const ySteps = 5;
+  const yStep = (maxY - minY) / ySteps;
+  let yGrid = '';
+  for (let i = 0; i <= ySteps; i++) {
+    const v = minY + i * yStep;
+    const y = sy(v);
+    yGrid += `<line x1="${pad.l}" y1="${y}" x2="${W-pad.r}" y2="${y}" stroke="#e6e0d4" stroke-width="0.7"/>`;
+    yGrid += `<text x="${pad.l-10}" y="${y+4}" fill="#a9a295" font-size="11" font-family="DM Sans,sans-serif" text-anchor="end">${v.toFixed(1)}</text>`;
+  }
+
+  const mNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  let xLabels = '';
+  const step = Math.max(1, Math.floor(n / 10));
+  for (let i = 0; i < n; i += step) {
+    const d = sim.navSeries[i].x;
+    const m = parseInt(d.slice(5,7))-1;
+    const y = d.slice(2,4);
+    xLabels += `<text x="${sx(i)}" y="${H-8}" fill="#a9a295" font-size="10" font-family="DM Sans,sans-serif" text-anchor="middle" transform="rotate(-30,${sx(i)},${H-8})">${mNames[m]} '${y}</text>`;
+  }
+
+  let tooltipDots = '';
+  const tipStep = Math.max(1, Math.floor(n / 12));
+  for (let i = 0; i < n; i += tipStep) {
+    const d = sim.navSeries[i].x;
+    const fv = sim.navSeries[i].y.toFixed(2);
+    const ev = sim.egxSeries[i].y.toFixed(2);
+    const tv = sim.tbillOnlySeries[i].y.toFixed(2);
+    tooltipDots += `<circle cx="${sx(i).toFixed(1)}" cy="${sy(sim.navSeries[i].y).toFixed(1)}" r="4" fill="#b8860b" opacity="0" style="cursor:crosshair">
+      <title>${d}  Fund: ${fv}  EGX30: ${ev}  T-Bill: ${tv}</title></circle>`;
+  }
+  // always include last point
+  if ((n-1) % tipStep !== 0) {
+    const li = n-1, d = sim.navSeries[li].x;
+    tooltipDots += `<circle cx="${sx(li).toFixed(1)}" cy="${sy(sim.navSeries[li].y).toFixed(1)}" r="4" fill="#b8860b" opacity="0" style="cursor:crosshair">
+      <title>${d}  Fund: ${sim.navSeries[li].y.toFixed(2)}  EGX30: ${sim.egxSeries[li].y.toFixed(2)}  T-Bill: ${sim.tbillOnlySeries[li].y.toFixed(2)}</title></circle>`;
+  }
+
+  $('#chartContainer').innerHTML = `
+    <svg viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="xMidYMid meet" style="display:block">
+      <defs>
+        <linearGradient id="fundFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#b8860b" stop-opacity="0.12"/>
+          <stop offset="100%" stop-color="#b8860b" stop-opacity="0.01"/>
+        </linearGradient>
+      </defs>
+      ${yGrid}
+      ${xLabels}
+      <path d="${areaPath}" fill="url(#fundFill)"/>
+      ${polyline(sim.tbillOnlySeries, '#bbb', '4 3', 1.2)}
+      ${polyline(sim.egxSeries, '#6b93c0', '6 3', 1.8)}
+      ${polyline(sim.navSeries, '#b8860b', null, 2.8)}
+      ${tooltipDots}
+    </svg>`;
+}
+
+// ── Slider track fill ───────────────────────────────────────────────
+function updateSliderFill() {
+  const s = $('#tbillSlider');
+  const pct = ((s.value - s.min) / (s.max - s.min)) * 100;
+  s.style.background = `linear-gradient(90deg, #b8860b ${pct}%, #3a362e ${pct}%)`;
+}
+
+// ── Master render ───────────────────────────────────────────────────
+function update() {
+  const levers = getLevers();
+  const sim = simulate(levers);
+  renderBanner(sim);
+  renderMetrics(sim);
+  renderTable();
+  renderChart(sim);
+  updateSliderFill();
+  $('#gen').innerHTML = `Generated ${D.generatedAt}<br>${D.assets.length} assets &middot; ${levers.startDate.slice(0,7)} to ${levers.endDate.slice(0,7)}`;
+}
+
+// ── Event wiring ────────────────────────────────────────────────────
+$('#startDate').onchange = update;
+$('#endDate').onchange = update;
+$$('input[name=weight]').forEach(r => r.onchange = update);
+$$('input[name=cap]').forEach(r => r.onchange = update);
+$('#tbillSlider').oninput = () => {
+  $('#tbillDisplay').textContent = $('#tbillSlider').value + '%';
+  update();
+};
+$$('.tbl-chips .chip').forEach(c => c.onclick = () => {
+  $$('.tbl-chips .chip').forEach(x => x.classList.remove('on'));
+  c.classList.add('on');
+  tableFilter = c.dataset.f;
+  renderTable();
 });
-$('#search').oninput = e=>{ q=e.target.value.trim().toLowerCase(); render(); };
 
-render();
+// ── Initial render ──────────────────────────────────────────────────
+update();
 </script>
 </body>
 </html>
