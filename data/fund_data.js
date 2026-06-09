@@ -55,7 +55,7 @@ window.FUND_DATA = {
       nameAr: "اسباير كابيتال القابضة", ticker: "ASPI.CA", parentTicker: null,
       isin: null, market: "Main",
       entryDate: "2026-01-20", exitDate: null,
-      entryPrice: 0.38, currentPrice: 0.42, high: 0.55, low: 0.32,
+      entryPrice: 0.38, currentPrice: 0.36, high: 0.4, low: 0.24,
       rightsTraded: null, volume: null, trades: null,
       offerSize: null
     },
@@ -64,7 +64,7 @@ window.FUND_DATA = {
       nameAr: "نهر الخير للتنمية والاستثمار الزراعي", ticker: "KRDI.CA", parentTicker: null,
       isin: null, market: "Main",
       entryDate: "2026-01-15", exitDate: null,
-      entryPrice: 0.70, currentPrice: 0.85, high: 1.05, low: 0.62,
+      entryPrice: 0.70, currentPrice: 0.36, high: 0.74, low: 0.34,
       rightsTraded: null, volume: null, trades: null,
       offerSize: null
     },
@@ -73,7 +73,7 @@ window.FUND_DATA = {
       nameAr: "جنوب الوادى للاسمنت", ticker: "SVCE.CA", parentTicker: null,
       isin: null, market: "Main",
       entryDate: "2026-01-20", exitDate: null,
-      entryPrice: 28.50, currentPrice: 34.20, high: 38.00, low: 25.00,
+      entryPrice: 28.50, currentPrice: 9.04, high: 10.15, low: 5.07,
       rightsTraded: null, volume: null, trades: null,
       offerSize: null
     },
@@ -82,7 +82,7 @@ window.FUND_DATA = {
       nameAr: "المطورون العرب القابضة", ticker: "ARAB.CA", parentTicker: null,
       isin: null, market: "Main",
       entryDate: "2026-01-10", exitDate: null,
-      entryPrice: 0.48, currentPrice: 0.52, high: 0.65, low: 0.40,
+      entryPrice: 0.48, currentPrice: 0.21, high: 0.28, low: 0.17,
       rightsTraded: null, volume: null, trades: null,
       offerSize: null
     },
@@ -91,7 +91,7 @@ window.FUND_DATA = {
       nameAr: "الاسكندرية للخدمات الطبية", ticker: "AMES.CA", parentTicker: null,
       isin: null, market: "Main",
       entryDate: "2026-01-20", exitDate: null,
-      entryPrice: 185.00, currentPrice: 210.00, high: 230.00, low: 170.00,
+      entryPrice: 185.00, currentPrice: 50.79, high: 67, low: 19.3,
       rightsTraded: null, volume: null, trades: null,
       offerSize: null
     },
@@ -102,7 +102,7 @@ window.FUND_DATA = {
       nameAr: "تعليم لإدارة المدارس", ticker: "TALM.CA", parentTicker: null,
       isin: null, market: "Main",
       entryDate: "2021-04-07", exitDate: null,
-      entryPrice: 5.75, currentPrice: 7.50, high: 12.80, low: 4.90,
+      entryPrice: 5.75, currentPrice: 15.85, high: 18.7, low: 10.05,
       rightsTraded: null, volume: 2100000000, trades: null,
       offerSize: 2100000000,
       ipoShares: 357800000, oversubscription: "29.8x"
@@ -112,7 +112,7 @@ window.FUND_DATA = {
       nameAr: "أكت فاينانشال", ticker: "ACTF.CA", parentTicker: null,
       isin: null, market: "Main",
       entryDate: "2024-07-23", exitDate: null,
-      entryPrice: 3.65, currentPrice: 2.79, high: 3.42, low: 2.54,
+      entryPrice: 3.65, currentPrice: 2.75, high: 3.42, low: 2.54,
       rightsTraded: null, volume: 550000000, trades: null,
       offerSize: 550000000,
       ipoShares: 150000000, oversubscription: "20.2x"
@@ -122,7 +122,7 @@ window.FUND_DATA = {
       nameAr: "المصرف المتحد", ticker: "UBEE.CA", parentTicker: null,
       isin: null, market: "Main",
       entryDate: "2024-12-10", exitDate: null,
-      entryPrice: 13.85, currentPrice: 13.70, high: 16.20, low: 12.50,
+      entryPrice: 13.85, currentPrice: 13.76, high: 19.08, low: 12.4,
       rightsTraded: null, volume: 4500000000, trades: null,
       offerSize: 4500000000,
       ipoShares: 330000000, oversubscription: "59x"
@@ -132,7 +132,7 @@ window.FUND_DATA = {
       nameAr: "بنيان للتنمية والتجارة", ticker: "BONY.CA", parentTicker: null,
       isin: null, market: "Main",
       entryDate: "2025-07-06", exitDate: null,
-      entryPrice: 4.96, currentPrice: 5.60, high: 6.80, low: 4.50,
+      entryPrice: 4.96, currentPrice: 5.55, high: 5.95, low: 3.45,
       rightsTraded: null, volume: 1800000000, trades: null,
       offerSize: 1800000000,
       ipoShares: 362900000, oversubscription: "6.88x"
@@ -142,7 +142,7 @@ window.FUND_DATA = {
       nameAr: "ڤاليو للتمويل الاستهلاكي", ticker: "VALU.CA", parentTicker: null,
       isin: null, market: "Main",
       entryDate: "2025-06-22", exitDate: null,
-      entryPrice: 0.78, currentPrice: 7.40, high: 8.50, low: 0.78,
+      entryPrice: 0.78, currentPrice: 11.79, high: 13.19, low: 6.93,
       rightsTraded: null, volume: null, trades: null,
       offerSize: null,
       ipoShares: null, oversubscription: null,
@@ -153,7 +153,7 @@ window.FUND_DATA = {
       nameAr: "جورميه ايجيبت للأغذية", ticker: "GOUR.CA", parentTicker: null,
       isin: null, market: "Main",
       entryDate: "2026-02-10", exitDate: null,
-      entryPrice: 6.90, currentPrice: 12.74, high: 15.40, low: 6.50,
+      entryPrice: 6.90, currentPrice: 12.93, high: 15.4, low: 6.9,
       rightsTraded: null, volume: 1300000000, trades: null,
       offerSize: 1300000000,
       ipoShares: 400000000, oversubscription: "55x"

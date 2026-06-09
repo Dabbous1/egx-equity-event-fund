@@ -137,7 +137,7 @@ header.top{display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap;justify-c
 .fb-cell{padding:22px 24px;position:relative}
 .fb-cell:not(:last-child){border-right:1px solid var(--parchment)}
 .fb-cell:not(:last-child)::after{
-  content:'';position:absolute;right:-1px;top:50%;transform:translateY(-50%);
+  content:'';position:absolute;right:-10px;top:50%;transform:translateY(-50%);
   width:20px;height:20px;
   background:var(--cream);border:1px solid var(--parchment);border-radius:50%;
   z-index:1;display:flex;align-items:center;justify-content:center;
@@ -660,6 +660,7 @@ const COLS = [
     return `<span class="type-badge type-${a.type}">${a.type.toUpperCase()}</span>`;
   }},
   {key:'ticker',  label:'Ticker',         fmt: a=> `<span class="ticker-code">${a.ticker||'—'}</span>`},
+  {key:'offerPrice', label:'IPO Offer Price', fmt: a=> a.type==='ipo' ? px(a.offerPrice ?? a.entryPrice)+' EGP' : '—', num: a=> a.type==='ipo' ? (a.offerPrice ?? a.entryPrice ?? 0) : -1},
   {key:'low',     label:'Low',            fmt: a=> px(a.low), num: a=>a.low},
   {key:'high',    label:'High',           fmt: a=> px(a.high), num: a=>a.high},
   {key:'return',  label:'Return',         fmt: a=> {
